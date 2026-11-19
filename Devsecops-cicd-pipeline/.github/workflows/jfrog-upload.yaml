@@ -1,0 +1,48 @@
+name: jfrog upload artifact
+
+on:
+  workflow_call
+
+jobs:
+  jfrog-upload:
+    runs-on: self-hosted
+
+    steps:
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: target
+
+      - name: Set up JFrog CLI
+        run: |
+          curl -fL https://getcli.jfrog.io | sh
+          chmod +x jfrog
+          sudo mv jfrog /usr/local/bin/jf
+        
+#      - name: Configure JFrog CLI
+#        run: |
+#          if ! jf config show artifactory-server &> /dev/null; then
+#            jf config add artifactory-server \
+#            --artifactory-url=${{ secrets.JFROG_URL }} \
+#            --user=${{ secrets.JFROG_USERNAME }} \
+#            --access-token=${{ secrets.JFROG_TOKEN }} \
+#            -interactive=false
+#          else
+#            echo "JFrog config 'artifactory-server' already exists. Skipping."
+#          fi
+
+      - name: Upload Artifact [jar artifact]
+        run: |
+          jf rt u "target/spring-petclinic-3.2.0-SNAPSHOT.jar" "onmo-sports-jf-repo/org/springframework/samples/spring-petclinic/3.2.0-SNAPSHOT/" \
+        env: 
+            JFROG_CLI_JFROG_URL: ${{ secrets.JFROG_URL }}
+            JFROG_CLI_ACCESS_TOKEN: ${{ secrets.JFROG_TOKEN }}
+
+      - name: Confirm Upload
+        run: |
+          jf rt s "onmo-sports-jf-repo/org/springframework/samples/spring-petclinic/3.2.0-SNAPSHOT/"

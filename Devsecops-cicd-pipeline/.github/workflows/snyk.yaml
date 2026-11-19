@@ -1,0 +1,30 @@
+name: Snyk Vulnerability Scan(dependency, container, IaC)
+on:
+  workflow_call:
+jobs:
+  snyk-scan:
+    runs-on: self-hosted
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js (Required by Snyk CLI)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Run Snyk Scan (terminal output)
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_MAVEN_BINARY: mvn
+        run: snyk test --file=pom.xml --package-manager=maven || true
+
+
+      - name: Monitor with Snyk (Push to Dashboard)
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk monitor --file=pom.xml --package-manager=maven

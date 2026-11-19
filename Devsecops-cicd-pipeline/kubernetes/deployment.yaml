@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp-container
+          image: deepikdc/onmo-sports:c4c8c8ecc4b97d0b3711af4d9c91c4d08f4205d8
+          ports:
+            - containerPort: 8080
