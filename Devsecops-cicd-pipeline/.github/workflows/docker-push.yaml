@@ -52,8 +52,8 @@ jobs:
       - name: Commit and push changes
         run: |
           set -e
-          git config --global user.email "dpkashrm@gmail.com"
-          git config --global user.name "DeepikGit"
+          git config --global user.email "****@gmail.com"
+          git config --global user.name "*****"
           git add kubernetes/deployment.yaml
           if git diff --cached --quiet; then
             echo "No changes to commit."
